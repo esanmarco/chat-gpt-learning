@@ -1,7 +1,8 @@
 import { create } from "zustand";
+import { PromptInput } from "../hooks/useGenerateMessage";
 
 interface MessageStore {
-  messages: string[];
+  messages: PromptInput[];
 }
 
 export const useMessageStore = create<MessageStore>(() => ({

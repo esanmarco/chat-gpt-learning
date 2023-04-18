@@ -1,7 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import useGenerateMessage, { Role } from "../hooks/useGenerateMessage";
+import useGenerateMessage, {
+  PromptInput,
+  Role,
+} from "../hooks/useGenerateMessage";
 import { useMessageStore } from "../stores/messageStore";
 
 export default function MessageForm() {
@@ -12,16 +15,15 @@ export default function MessageForm() {
   const handleSubmit = () => {
     if (!newMessage.length) return;
 
-    const payload = [
+    const payload: PromptInput[] = [
       ...messages,
       {
-        role: "user" as Role,
+        role: "user",
         content: newMessage,
-        created: Math.floor(Date.now() / 1000),
       },
     ];
 
-    mutate(payload as any);
+    mutate(payload);
   };
 
   return (

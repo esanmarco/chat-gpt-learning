@@ -15,7 +15,7 @@ const promptResponseSchhema = z.object({
   choices: z.array(
     z.object({
       message: z.object({
-        role: z.string(),
+        role: roleEnum,
         content: z.string(),
       }),
       finish_reason: z.string(),
@@ -37,7 +37,7 @@ export type Role = z.infer<typeof roleEnum>;
 export default function useGenerateMessage() {
   return useMutation({
     mutationKey: ["generateMessage"],
-    mutationFn: async (payload: PromptInput) => {
+    mutationFn: async (payload: PromptInput[]) => {
       const response = await fetch("/api/generate", {
         method: "POST",
         body: JSON.stringify(payload),
