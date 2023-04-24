@@ -1,4 +1,5 @@
 import MessageForm from "./components/messageForm";
+import MessageList from "./components/messageList";
 
 export default function Home() {
   return (
@@ -8,9 +9,7 @@ export default function Home() {
       </aside>
 
       <main className="flex flex-col flex-1 h-screen p-8 grow">
-        <div className="flex flex-col flex-1 p-6 border-2 rounded grow border-slate-700">
-          Messages section
-        </div>
+        <MessageList />
 
         <MessageForm />
       </main>

@@ -1,4 +1,3 @@
-import { useMutation } from "@tanstack/react-query";
 import { z } from "zod";
 
 const roleEnum = z.enum(["user", "assistant", "system"]);
@@ -33,17 +32,3 @@ const promptInputSchema = z.object({
 export type PromptInput = z.infer<typeof promptInputSchema>;
 export type PromptResponse = z.infer<typeof promptResponseSchhema>;
 export type Role = z.infer<typeof roleEnum>;
-
-export default function useGenerateMessage() {
-  return useMutation({
-    mutationKey: ["generateMessage"],
-    mutationFn: async (payload: PromptInput[]) => {
-      const response = await fetch("/api/generate", {
-        method: "POST",
-        body: JSON.stringify(payload),
-      });
-
-      return response.json();
-    },
-  });
-}

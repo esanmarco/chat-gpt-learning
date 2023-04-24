@@ -1,4 +1,4 @@
-import "./globals.css";
+import "./styles/globals.css";
 import QueryClientProvider from "./queryClient";
 
 export const metadata = {

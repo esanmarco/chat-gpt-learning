@@ -1,30 +1,37 @@
 import { NextResponse } from "next/server";
+import { Configuration, OpenAIApi } from "openai";
 
-const { Configuration, OpenAIApi } = require("openai");
-
-const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-interface ChatMessages {
-  model: string;
-  messages: string[];
-  temperature?: number;
+export interface MessagePayload {
+  messages: {
+    role: "user" | "assistant" | "system";
+    content: string;
+  }[];
 }
 
-const openai = new OpenAIApi(configuration);
+const configuration = new Configuration({
+  apiKey: process.env.OPENAI_API_KEY as string,
+});
 
-export async function POST(request: Request) {
-  console.log(process.env.OPENAI_API_KEY, "process.env.OPENAI_API_KEY");
-  const body: ChatMessages[] = await request.json();
+export const openai = new OpenAIApi(configuration);
 
-  const completion = await openai.createCompletion({
+export async function POST(req: Request) {
+  const body: MessagePayload = await req.json();
+
+  const systemMessage = {
+    role: "system",
+    content:
+      "You are an expert creative writer. All responses must be in markdown format",
+  };
+
+  const response = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
-    messages: body,
-    tempurature: 1,
+    messages: [systemMessage as any, ...body.messages],
+    temperature: 0.9,
   });
+  const responseMessage = response?.data?.choices?.[0]?.message?.content;
 
-  const newMessage = completion.data.choices[0].text;
-
-  return NextResponse.json({});
+  return NextResponse.json({
+    message: responseMessage,
+    status: 200,
+  });
 }

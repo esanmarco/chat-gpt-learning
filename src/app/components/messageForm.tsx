@@ -1,35 +1,51 @@
 "use client";
 
-import { useState } from "react";
-import useGenerateMessage, {
-  PromptInput,
-  Role,
-} from "../hooks/useGenerateMessage";
+import { useEffect } from "react";
+import useGenerate from "../hooks/useChatGPT";
 import { useMessageStore } from "../stores/messageStore";
+import { v4 as uuidv4 } from "uuid";
 
 export default function MessageForm() {
-  const { mutate, isLoading } = useGenerateMessage();
-  const [newMessage, setNewMessage] = useState("");
-  const { messages } = useMessageStore();
+  const { mutate, isLoading } = useGenerate();
+  const { conversationId, messages } = useMessageStore();
+
+  useEffect(() => {
+    if (conversationId === "") {
+      useMessageStore.setState({ conversationId: uuidv4() });
+    }
+  }, [conversationId]);
 
   const handleSubmit = () => {
-    if (!newMessage.length) return;
+    const message = document.getElementById(
+      "message-box"
+    ) as HTMLTextAreaElement;
 
-    const payload: PromptInput[] = [
+    // 1. Cross check the conversationId, and add a new one if it doesn't exist
+    // 2. Add the new message to the chat store
+    // 3. Hit the generate API to get a response
+    // 4. Add the response to the chat store
+    // 5. Store the messages in the database using the conversationId
+
+    const newMessages = [
       ...messages,
       {
         role: "user",
-        content: newMessage,
+        content: message.value,
       },
     ];
 
-    mutate(payload);
+    useMessageStore.setState({ messages: newMessages, fetching: true });
+
+    mutate({
+      messages: newMessages,
+      conversationId: conversationId,
+    });
   };
 
   return (
     <div className="flex flex-col flex-shrink-0 mt-5">
       <textarea
-        onChange={(e) => setNewMessage(e.target.value)}
+        id="message-box"
         className="w-full textarea textarea-bordered"
         placeholder="Ask CHATGPT a question!"
       />
@@ -39,7 +55,7 @@ export default function MessageForm() {
           isLoading ? "loading" : ""
         }`}
       >
-        Ask!
+        Submit
       </button>
     </div>
   );
